@@ -4,9 +4,15 @@ Make a list of visits given the list of field ids and the opsim db file.
 """
 from __future__ import absolute_import
 import os
+import sys
+import logging
 import sqlite3
 
-opsim_db_file = os.environ['OSPIM_DB_FILE']
+logging.basicConfig(format="make_visit_list: %(message)s", level=logging.INFO,
+                    stream=sys.stdout)
+logger = logging.getLogger()
+
+opsim_db_file = os.environ['OPSIM_DB_FILE']
 conn = sqlite3.connect(opsim_db_file)
 
 field_id_file = os.environ['FIELD_ID_FILE']
@@ -15,9 +21,15 @@ visit_list_file = os.environ['VISIT_LIST_FILE']
 obsHistIds = []
 with open(field_id_file) as input_:
     for line in input_:
+        if line.startswith('#'):
+            continue
         fieldId = line.strip()
-        query = 'select obsHistId from Summary where fieldId=%s' % fieldId
-        obsHistIds.extend([row[0] for row in conn.execute(query)])
+        query = ('select distinct obsHistId from Summary where fieldId=%s'
+                 % fieldId)
+        logger.info("executing query: %s", query)
+        ids = [row[0] for row in conn.execute(query)]
+        logger.info("number of visits: %i", len(ids))
+        obsHistIds.extend(ids)
 
 with open(visit_list_file, 'w') as output:
     for obsHistId in obsHistIds:
