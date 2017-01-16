@@ -3,6 +3,7 @@
 Run imsim.py on the instance catalog for the current visit and
 for the desired sensor.
 """
+from __future__ import absolute_import
 import os
 import sys
 import logging

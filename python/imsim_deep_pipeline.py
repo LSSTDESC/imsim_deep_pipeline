@@ -1,9 +1,13 @@
 """
 Jython functions to be run in the imsim_deep_pipeline.xml scripts.
 """
-import java.util import HashMap
+from java.util import HashMap
 
 def submit_visits():
+    """
+    Loop over obsHistIds in the VISIT_LIST_FILE and submit the
+    associated visit_task.
+    """
     job_vars = HashMap()
     visit_file = open(VISIT_LIST_FILE)
     for line in visit_file:
@@ -13,6 +17,9 @@ def submit_visits():
     visit_file.close()
 
 def submit_imsim_jobs():
+    """
+    Loop over the sensors and submit the imsim_tasks.
+    """
     job_vars = HashMap()
     num_sensors = int(NUM_SENSORS)
     for sensor_number in range(num_sensors):
@@ -20,4 +27,7 @@ def submit_imsim_jobs():
         pipeline.createSubstream('imsim_task', sensor_number, job_vars)
 
 def register_imsim_files():
+    """
+    Register the imsim.py data products with the Data Catalog.
+    """
     pass

@@ -2,6 +2,7 @@
 """
 Make a list of visits given the list of field ids and the opsim db file.
 """
+from __future__ import absolute_import
 import os
 import sqlite3
 
@@ -14,7 +15,7 @@ visit_list_file = os.environ['VISIT_LIST_FILE']
 obsHistIds = []
 with open(field_id_file) as input_:
     for line in input_:
-        fieldId = input.strip()
+        fieldId = line.strip()
         query = 'select obsHistId from Summary where fieldId=%s' % fieldId
         obsHistIds.extend([row[0] for row in conn.execute(query)])
 
