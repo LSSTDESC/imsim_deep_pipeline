@@ -1,0 +1,25 @@
+#!/usr/bin/env python
+"""
+Run imsim.py on the instance catalog for the current visit and
+for the desired sensor.
+"""
+import os
+import sys
+import logging
+import subprocess
+sys.path.insert(0, os.environ['PYTHON_MODULES_DIR'])
+import imsim_deep_utils
+
+logging.basicConfig(format="run_imsim: %(message)s", level=logging.INFO,
+                    stream=sys.stdout)
+logger = logging.getLogger()
+
+obsHistId, instcat_file = imsim_deep_utils.get_visit_info()
+output_dir = os.environ['IMSIM_DEEP_OUTPUT_DIR']
+sensor_number = int(os.environ['SENSOR_NUMBER'])
+sensor_id = imsim_deep_utils.sensors()[sensor_number]
+
+command = ('imsim.py %s --outdir %s --sensor %s --log_level DEBUG'
+           % (instcat_file, output_dir, sensor_id))
+logger.info("running %s", command)
+subprocess.check_call(command, shell=True)

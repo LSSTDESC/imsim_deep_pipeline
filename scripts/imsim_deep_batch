@@ -1,0 +1,18 @@
+#!/bin/bash
+ulimit -c ${CORE_LIMIT:-1000} # Limit core dump
+set -e # exit on error
+
+# Set up a unique work directory for this pipeline stream
+stream=$(echo $PIPELINE_STREAMPATH | cut -f1 -d.)
+export WORK_DIR=${OUTPUT_DATA_DIR}/work/${stream}
+
+# Workaround for EUPS trying to write to home directory
+export HOME=`pwd`
+
+# Workaround for low level libraries such as OpenBLAS allocating many threads
+export OMP_NUM_THREADS=1
+
+export SCRIPT=${SCRIPT_LOCATION}/${PIPELINE_PROCESS:-$1}
+
+# Set up Stack environment and invoke process specific script.
+scl enable devtoolset-3 'source ${SETUP_FILE}; set -xe; export SHELLOPTS; source ${SCRIPT}'

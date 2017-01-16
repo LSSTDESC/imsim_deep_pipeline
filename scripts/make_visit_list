@@ -1,0 +1,23 @@
+#!/usr/bin/env python
+"""
+Make a list of visits given the list of field ids and the opsim db file.
+"""
+import os
+import sqlite3
+
+opsim_db_file = os.environ['OSPIM_DB_FILE']
+conn = sqlite3.connect(opsim_db_file)
+
+field_id_file = os.environ['FIELD_ID_FILE']
+visit_list_file = os.environ['VISIT_LIST_FILE']
+
+obsHistIds = []
+with open(field_id_file) as input_:
+    for line in input_:
+        fieldId = input.strip()
+        query = 'select obsHistId from Summary where fieldId=%s' % fieldId
+        obsHistIds.extend([row[0] for row in conn.execute(query)])
+
+with open(visit_list_file, 'w') as output:
+    for obsHistId in obsHistIds:
+        output.write('%i\n' % obsHistId)

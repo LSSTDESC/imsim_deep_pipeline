@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pipeline xmlns="http://glast-ground.slac.stanford.edu/pipeline" xmlns:xs="http://www.w3.org/2001/XMLSchema-instance" xs:schemaLocation="http://glast-ground.slac.stanford.edu/pipeline           http://srs.slac.stanford.edu/Pipeline-II/schemas/2.1/pipeline.xsd">
+    <task name="imsim_deep_pipeline" type="LSST" version="0.1">
+        <variables>
+            <var name="SITE">SLAC</var>
+            <var name="MAXCPU">${100000 / (SITE==&quot;NERSC&quot; ? 10 : 1)}</var>
+            <var name="MAXCPULONG">${100000 / (SITE==&quot;NERSC&quot; ? 10 : 1)}</var>
+            <var name="SLAC_BATCH_OPTIONS">-R rhel60 -R bullet</var>
+            <var name="NERSC_BATCH_OPTIONS">-p shared | -L SCRATCH</var>
+            <var name="BATCH_OPTIONS">${SITE==&quot;NERSC&quot; ? NERSC_BATCH_OPTIONS : SLAC_BATCH_OPTIONS}</var>
+
+            <!-- Base directory for imsim_deep_pipeline code -->
+            <var name="SLAC_PIPELINE_CODE_DIR">/nfs/farm/g/desc/u1/imsim_deep/imsim_deep_pipeline</var>
+            <var name="NERSC_PIPELINE_CODE_DIR">/global/cscratch1/sd/jchiang8/imsim_deep/imsim_deep_pipeline</var>
+            <var name="PIPELINE_CODE_DIR">${SITE==&quot;NERSC&quot; ? NERSC_PIPELINE_CODE_DIR : SLAC_PIPELINE_CODE_DIR}</var>
+
+            <var name="SCRIPT_DIR">${PIPELINE_CODE_DIR}/scripts</var>
+            <var name="PYTHON_MODULES_DIR">${PIPELINE_CODE_DIR}/python</var>
+
+            <!-- imsim_deep setup file -->
+            <var name="SLAC_SETUP">slac_setup.sh</var>
+            <var name="NERSC_SETUP">nersc_setup.sh</var>
+            <var name="SETUP_FILE">${SCRIPT_DIR}/${SITE==&quot;NERSC&quot; ? NERSC_SETUP : SLAC_SETUP}</var>
+
+            <!-- Directory where input files can be found -->
+            <var name="SLAC_INPUT_DATA_DIR">/nfs/farm/g/desc/u1/imsim_deep/pipeline/input</var>
+            <var name="NERSC_INPUT_DATA_DIR">/global/cscratch1/sd/jchiang8/imsim_deep/pipeline/input</var>
+            <var name="INPUT_DATA_DIR">${SITE==&quot;NERSC&quot; ? NERSC_INPUT_DATA_DIR : SLAC_INPUT_DATA_DIR}</var>
+
+            <!-- Base directory where output files will be placed -->
+            <var name="SLAC_OUTPUT_DATA_DIR">/nfs/farm/g/desc/u1/imsim_deep/pipeline/output</var>
+            <var name="NERSC_OUTPUT_DATA_DIR">/global/cscratch1/sd/jchiang8/imsim_deep/pipeline/output</var>
+            <var name="OUTPUT_DATA_DIR">${SITE==&quot;NERSC&quot; ? NERSC_OUTPUT_DATA_DIR : SLAC_OUTPUT_DATA_DIR}</var>
+
+            <var name="OPSIM_DB_FILE">${INPUT_DATA_DIR}/minion_1016_sqlite.db</var>
+            <var name="FIELD_ID_FILE">${INPUT_DATA_DIR}/imsim_deep_field_ids.txt</var>
+            <var name="VISIT_LIST_FILE">${OUPUT_DATA_DIR}/imsim_deep_visits.txt</var>
+
+            <var name="PIPELINE_MODULE">imsim_deep_pipeline.py</var>
+            <var name="BATCH_EXECUTOR">imsim_deep_batch</var>
+            <var name="JOBSITE">${SITE==&quot;NERSC&quot; ? &quot;NERSCTONYJ&quot; : &quot;LSST&quot;}</var>
+            <var name="NUM_SENSORS">189</var>
+        </variables>
+
+        <process name="make_visit_list" site="${JOBSITE}">
+            <job batchOptions="${BATCH_OPTIONS}" executable="${SCRIPT_DIR}/${BATCH_EXECUTOR}" maxCPU="${MAXCPU}"/>
+        </process>
+
+        <process name="submit_visits" site="${JOBSITE}">
+            <script><![CDATA[
+    execfile("%s/%s" % (PYTHON_MODULES_DIR, PIPELINE_MODULE))
+    submit_visits()
+]]>
+            </script>
+            <depends>
+                <after process="make_visit_list"/>
+            </depends>
+            <createsSubtasks>
+                <subtask>visit_task</subtask>
+            </createsSubtasks>
+        </process>
+
+        <task name="visit_task" type="LSST">
+            <process name="make_instcat" site="${JOBSITE}">
+                <job batchOptions="${BATCH_OPTIONS}" executable="${SCRIPT_DIR}/${BATCH_EXECUTOR}" maxCPU="${MAXCPU}"/>
+            </process>
+            <process name="submit_imsim_jobs" site="${JOBSITE}">
+                <script><![CDATA[
+    execfile("%s/%s" % (PYTHON_MODULES_DIR, PIPELINE_MODULE))
+    submit_imsim_jobs()
+]]>
+                </script>
+                <depends>
+                    <after process="make_instcat"/>
+                </depends>
+                <createsSubtasks>
+                    <subtask>imsim_task</subtask>
+                </createsSubtasks>
+            </process>
+            <task name="imsim_task" type="LSST">
+                <process name="run_imsim" site="${JOBSITE}">
+                    <job batchOptions="${BATCH_OPTIONS}" executable="${SCRIPT_DIR}/${BATCH_EXECUTOR}" maxCPU="${MAXCPU}"/>
+                </process>
+                <process name="register_imsim_files" site="${JOBSITE}">
+                    <script><![CDATA[
+    execfile("%s/%s" % (PYTHON_MODULES_DIR, PIPELINE_MODULE))
+    register_imsim_files()
+]]>
+                    </script>
+                    <depends>
+                        <after process="run_imsim"/>
+                    </depends>
+                </process>
+            </task>
+
+        </task>
+
+    </task>
+</pipeline>
