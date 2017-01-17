@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <pipeline xmlns="http://glast-ground.slac.stanford.edu/pipeline" xmlns:xs="http://www.w3.org/2001/XMLSchema-instance" xs:schemaLocation="http://glast-ground.slac.stanford.edu/pipeline           http://srs.slac.stanford.edu/Pipeline-II/schemas/2.1/pipeline.xsd">
-    <task name="imsim_deep_pipeline" type="LSST" version="0.1">
+    <task name="imsim_deep_pipeline" type="LSST" version="0.3">
         <variables>
             <var name="SITE">SLAC</var>
             <var name="MAXCPU">${100000 / (SITE==&quot;NERSC&quot; ? 10 : 1)}</var>
@@ -34,7 +34,7 @@
 
             <var name="OPSIM_DB_FILE">${INPUT_DATA_DIR}/minion_1016_sqlite.db</var>
             <var name="FIELD_ID_FILE">${INPUT_DATA_DIR}/imsim_deep_field_ids.txt</var>
-            <var name="VISIT_LIST_FILE">${OUPUT_DATA_DIR}/imsim_deep_visits.txt</var>
+            <var name="VISIT_LIST_FILE">${OUTPUT_DATA_DIR}/imsim_deep_visits.txt</var>
 
             <var name="PIPELINE_MODULE">imsim_deep_pipeline.py</var>
             <var name="BATCH_EXECUTOR">imsim_deep_batch</var>
