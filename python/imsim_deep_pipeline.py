@@ -10,7 +10,7 @@ def submit_visits():
     """
     job_vars = HashMap()
     visit_file = open(VISIT_LIST_FILE)
-    for line in visit_file:
+    for line in visit_file.readlines():
         obsHistID = int(line.strip())
         job_vars.put('OBSHISTID', obsHistID)
         pipeline.createSubstream("visit_task", obsHistID, job_vars)
