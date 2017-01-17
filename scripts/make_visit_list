@@ -18,14 +18,16 @@ conn = sqlite3.connect(opsim_db_file)
 field_id_file = os.environ['FIELD_ID_FILE']
 visit_list_file = os.environ['VISIT_LIST_FILE']
 
+lsst_band = os.environ['LSST_BAND']
+
 obsHistIds = []
 with open(field_id_file) as input_:
     for line in input_:
         if line.startswith('#'):
             continue
         fieldId = line.strip()
-        query = ('select distinct obsHistId from Summary where fieldId=%s'
-                 % fieldId)
+        query = ("select distinct obsHistId from Summary where " +
+                 "fieldId=%s and filter='%s'" % (fieldId, lsst_band))
         logger.info("executing query: %s", query)
         ids = [row[0] for row in conn.execute(query)]
         logger.info("number of visits: %i", len(ids))

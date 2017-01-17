@@ -15,12 +15,13 @@ logging.basicConfig(format="run_imsim: %(message)s", level=logging.INFO,
                     stream=sys.stdout)
 logger = logging.getLogger()
 
-obsHistId, instcat_file = imsim_deep_utils.get_visit_info()
-output_dir = os.environ['IMSIM_DEEP_OUTPUT_DIR']
+visit_info = imsim_deep_utils.get_visit_info()
+output_dir = os.path.join(os.environ['OUTPUT_DATA_DIR'],
+                          '%07i' % visit_info.obsHistId)
 sensor_number = int(os.environ['SENSOR_NUMBER'])
 sensor_id = imsim_deep_utils.sensors()[sensor_number]
 
-command = ('imsim.py %s --outdir %s --sensor %s --log_level DEBUG'
-           % (instcat_file, output_dir, sensor_id))
+command = ('imsim.py %s --outdir %s --sensor "%s" --log_level DEBUG'
+           % (visit_info.instcat_file, output_dir, sensor_id))
 logger.info("running %s", command)
 subprocess.check_call(command, shell=True)

@@ -40,6 +40,8 @@
             <var name="BATCH_EXECUTOR">imsim_deep_batch</var>
             <var name="JOBSITE">${SITE==&quot;NERSC&quot; ? &quot;NERSCTONYJ&quot; : &quot;LSST&quot;}</var>
             <var name="NUM_SENSORS">189</var>
+            <var name="LSST_BAND">r</var>
+            <var name="INSTCAT_RADIUS">1.8</var>
         </variables>
 
         <process name="make_visit_list" site="${JOBSITE}">

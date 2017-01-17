@@ -12,7 +12,7 @@ export HOME=`pwd`
 # Workaround for low level libraries such as OpenBLAS allocating many threads
 export OMP_NUM_THREADS=1
 
-export SCRIPT=${SCRIPT_LOCATION}/${PIPELINE_PROCESS:-$1}
+export SCRIPT=${SCRIPT_DIR}/${PIPELINE_PROCESS:-$1}
 
 # Set up Stack environment and invoke process specific script.
-scl enable devtoolset-3 'source ${SETUP_FILE}; set -xe; export SHELLOPTS; source ${SCRIPT}'
+scl enable devtoolset-3 'source ${SETUP_FILE}; set -xe; export SHELLOPTS; ${SCRIPT}'

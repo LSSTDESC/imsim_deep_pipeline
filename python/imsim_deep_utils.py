@@ -1,31 +1,33 @@
 """
 Utilities for the imsim_deep pipeline python code.
 """
+from __future__ import absolute_import
 import os
 import itertools
+from collections import namedtuple
 
-def get_visit_info(band='r', radius=1.8):
+visit_info = namedtuple('visit_info',
+                        ('obsHistId', 'instcat_file', 'instcat_radius'))
+
+def get_visit_info():
     """
     Get the desired obsHistId, as set by the driving jython script and
     build the instance catalog filepath.
 
-    Parameters
-    ----------
-    band : str, optional
-        The filter band to use. Default: 'r'
-    radius : float, optional
-        The radius of the sky cone in degrees for the instance catalog
-        generation. Default: 1.8
-
     Returns
     -------
-    tuple : obsHistId, instcat_file
+    tuple : obsHistId, instcat_file, instcat_radius
     """
-    obsHistId = os.environ['OBSHISTID']
-    instcat_file \
-        = os.path.join(os.environ['IMSIM_DEEP_INSTCAT_DIR'],
-                       'instcat_%07i_%s_%.1f.txt' % (obsHistId, band, radius))
-    return obsHistId, instcat_file
+    obsHistId = int(os.environ['OBSHISTID'])
+    lsst_band = os.environ['LSST_BAND']
+    instcat_radius = float(os.environ['INSTCAT_RADIUS'])
+    instcat_dir = os.path.join(os.environ['OUTPUT_DATA_DIR'],
+                               '%07i' % obsHistId)
+    if not os.path.isdir(instcat_dir):
+        os.mkdir(instcat_dir)
+    instcat_file = os.path.join(instcat_dir, 'instcat_%07i_%s_%.1f.txt'
+                                % (obsHistId, lsst_band, instcat_radius))
+    return visit_info(obsHistId, instcat_file, instcat_radius)
 
 def sensors():
     """
