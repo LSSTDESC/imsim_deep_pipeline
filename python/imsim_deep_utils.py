@@ -6,6 +6,8 @@ import os
 import itertools
 from collections import namedtuple
 
+__all__ = ['get_visit_info', 'sensors', 'trim_instcat']
+
 visit_info = namedtuple('visit_info',
                         ('obsHistId', 'instcat_file', 'instcat_radius'))
 
@@ -40,7 +42,43 @@ def sensors():
         are excluded.
     """
     corners = ((0, 0), (0, 4), (4, 0), (4, 4))
-    raft_ids = ['R:%i,%i' % x for x in itertools.product(range(5), range(5))
-                if x not in corners]
+#    raft_ids = ['R:%i,%i' % x for x in itertools.product(range(5), range(5))
+#                if x not in corners]
+    raft_ids = ['R:2,2']
     sensor_ids = ['S:%i,%i' % x for x in itertools.product(range(3), range(3))]
-    return ['%s %s' %x for x in itertools.product(raft_ids, sensor_ids)]
+    return [' '.join(x) for x in itertools.product(raft_ids, sensor_ids)]
+
+def trim_instcat(chipname, infile, outfile, radius=0.18):
+    """
+    Trim an instance catalog to an acceptance cone centered on the
+    specified sensor.
+
+    Parameters
+    ----------
+    chipname : str
+        The name of the sensor, e.g., 'R:2,2 S:1,1'.
+    infile : str
+        The filename of the instance catalog to be trimmed.
+    outfile : str
+        The output filename for the trimmed data.
+    radius : float, optional
+        The radius of the acceptance cone in degrees.  Default: 0.18;
+        this includes some buffer to account for differing pixel
+        geometries for ITL vs e2v sensors.
+
+    Notes
+    -----
+    This function depends on the optional ImSimDeep package.
+    """
+    import lsst.obs.lsstSim as obs_lsstSim
+    from lsst.sims.coordUtils import raDecFromPixelCoords
+    import desc.imsim
+    import desc.imsimdeep
+
+    camera = obs_lsstSim.LsstSimMapper().camera
+    instcat = desc.imsim.parsePhoSimInstanceFile(infile)
+    obs_md = desc.imsimdeep.obs_metadata(instcat.commands)
+    # Get the chip sensor coordinates in degrees.
+    ra, dec = raDecFromPixelCoords(2036, 2000, chipname, camera=camera,
+                                   obs_metadata=obs_md)
+    desc.imsimdeep.sky_cone_select(infile, ra, dec, radius, outfile)

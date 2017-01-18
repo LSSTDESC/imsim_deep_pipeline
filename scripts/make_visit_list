@@ -21,6 +21,8 @@ visit_list_file = os.environ['VISIT_LIST_FILE']
 lsst_band = os.environ['LSST_BAND']
 
 obsHistIds = []
+logger.info('fieldId   # visits    total visits')
+total_visits = 0
 with open(field_id_file) as input_:
     for line in input_:
         if line.startswith('#'):
@@ -28,9 +30,11 @@ with open(field_id_file) as input_:
         fieldId = line.strip()
         query = ("select distinct obsHistId from Summary where " +
                  "fieldId=%s and filter='%s'" % (fieldId, lsst_band))
-        logger.info("executing query: %s", query)
+        logger.debug("executing query: %s", query)
         ids = [row[0] for row in conn.execute(query)]
-        logger.info("number of visits: %i", len(ids))
+        total_visits += len(ids)
+        logger.info("%6ls       %i          %i", fieldId, len(ids),
+                    total_visits)
         obsHistIds.extend(ids)
 
 with open(visit_list_file, 'w') as output:

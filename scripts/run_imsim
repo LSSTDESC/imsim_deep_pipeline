@@ -6,6 +6,7 @@ for the desired sensor.
 from __future__ import absolute_import
 import os
 import sys
+import re
 import logging
 import subprocess
 sys.path.insert(0, os.environ['PYTHON_MODULES_DIR'])
@@ -21,7 +22,16 @@ sensor_id = imsim_deep_utils.sensors()[sensor_number]
 output_dir = os.path.join(os.environ['OUTPUT_DATA_DIR'],
                           '%07i' % visit_info.obsHistId)
 
+try:
+    instcat_file = \
+        os.path.join(output_dir,
+                     'instcat_' + re.sub('[:, ]', '_', sensor_id) + '.txt')
+    imsim_deep_utils.trim_instcat(sensor_id, visit_info.instcat_file,
+                                  instcat_file)
+except ImportError:
+    outfile = visit_info.instcat_file
+
 command = ('imsim.py %s --outdir %s --sensor "%s" --log_level DEBUG'
-           % (visit_info.instcat_file, output_dir, sensor_id))
+           % (instcat_file, output_dir, sensor_id))
 logger.info("running %s", command)
 subprocess.check_call(command, shell=True)
