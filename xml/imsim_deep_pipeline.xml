@@ -10,7 +10,7 @@
             <var name="BATCH_OPTIONS">${SITE==&quot;NERSC&quot; ? NERSC_BATCH_OPTIONS : SLAC_BATCH_OPTIONS}</var>
 
             <!-- Base directory for imsim_deep_pipeline code -->
-            <var name="SLAC_PIPELINE_CODE_DIR">/nfs/farm/g/desc/u1/imsim_deep/imsim_deep_pipeline</var>
+            <var name="SLAC_PIPELINE_CODE_DIR">/gpfs/slac/kipac/fs1/g/desc/imsim_deep/imsim_deep_pipeline</var>
             <var name="NERSC_PIPELINE_CODE_DIR">/global/cscratch1/sd/jchiang8/imsim_deep/imsim_deep_pipeline</var>
             <var name="PIPELINE_CODE_DIR">${SITE==&quot;NERSC&quot; ? NERSC_PIPELINE_CODE_DIR : SLAC_PIPELINE_CODE_DIR}</var>
 
@@ -23,12 +23,12 @@
             <var name="SETUP_FILE">${SCRIPT_DIR}/${SITE==&quot;NERSC&quot; ? NERSC_SETUP : SLAC_SETUP}</var>
 
             <!-- Directory where input files can be found -->
-            <var name="SLAC_INPUT_DATA_DIR">/nfs/farm/g/desc/u1/imsim_deep/pipeline/input</var>
+            <var name="SLAC_INPUT_DATA_DIR">/gpfs/slac/kipac/fs1/g/desc/imsim_deep/pipeline/input</var>
             <var name="NERSC_INPUT_DATA_DIR">/global/cscratch1/sd/jchiang8/imsim_deep/pipeline/input</var>
             <var name="INPUT_DATA_DIR">${SITE==&quot;NERSC&quot; ? NERSC_INPUT_DATA_DIR : SLAC_INPUT_DATA_DIR}</var>
 
             <!-- Base directory where output files will be placed -->
-            <var name="SLAC_OUTPUT_DATA_DIR">/nfs/farm/g/desc/u1/imsim_deep/pipeline/output</var>
+            <var name="SLAC_OUTPUT_DATA_DIR">/gpfs/slac/kipac/fs1/g/desc/imsim_deep/pipeline/output</var>
             <var name="NERSC_OUTPUT_DATA_DIR">/global/cscratch1/sd/jchiang8/imsim_deep/pipeline/output</var>
             <var name="OUTPUT_DATA_DIR">${SITE==&quot;NERSC&quot; ? NERSC_OUTPUT_DATA_DIR : SLAC_OUTPUT_DATA_DIR}</var>
 
