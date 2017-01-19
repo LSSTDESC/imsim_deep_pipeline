@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <pipeline xmlns="http://glast-ground.slac.stanford.edu/pipeline" xmlns:xs="http://www.w3.org/2001/XMLSchema-instance" xs:schemaLocation="http://glast-ground.slac.stanford.edu/pipeline           http://srs.slac.stanford.edu/Pipeline-II/schemas/2.1/pipeline.xsd">
-    <task name="imsim_deep_pipeline" type="LSST" version="0.4">
+    <task name="imsim_deep_pipeline" type="LSST" version="0.5">
         <variables>
             <var name="SITE">SLAC</var>
             <var name="MAXCPU">${100000 / (SITE==&quot;NERSC&quot; ? 10 : 1)}</var>
@@ -14,13 +14,14 @@
             <var name="NERSC_PIPELINE_CODE_DIR">/global/cscratch1/sd/jchiang8/imsim_deep/imsim_deep_pipeline</var>
             <var name="PIPELINE_CODE_DIR">${SITE==&quot;NERSC&quot; ? NERSC_PIPELINE_CODE_DIR : SLAC_PIPELINE_CODE_DIR}</var>
 
-            <var name="SCRIPT_DIR">${PIPELINE_CODE_DIR}/scripts</var>
+            <var name="SCRIPT_DIR">${PIPELINE_CODE_DIR}/bin</var>
+            <var name="SETUP_DIR">${PIPELINE_CODE_DIR}/setup</var>
             <var name="PYTHON_MODULES_DIR">${PIPELINE_CODE_DIR}/python</var>
 
             <!-- imsim_deep setup file -->
             <var name="SLAC_SETUP">slac_setup.sh</var>
             <var name="NERSC_SETUP">nersc_setup.sh</var>
-            <var name="SETUP_FILE">${SCRIPT_DIR}/${SITE==&quot;NERSC&quot; ? NERSC_SETUP : SLAC_SETUP}</var>
+            <var name="SETUP_FILE">${SETUP_DIR}/${SITE==&quot;NERSC&quot; ? NERSC_SETUP : SLAC_SETUP}</var>
 
             <!-- Directory where input files can be found -->
             <var name="SLAC_INPUT_DATA_DIR">/gpfs/slac/kipac/fs1/g/desc/imsim_deep/pipeline/input</var>
