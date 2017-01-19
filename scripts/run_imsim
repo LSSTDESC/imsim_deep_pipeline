@@ -3,9 +3,10 @@
 Run imsim.py on the instance catalog for the current visit and
 for the desired sensor.
 """
-from __future__ import absolute_import
+from __future__ import absolute_import, print_function
 import os
 import sys
+import re
 import logging
 import subprocess
 sys.path.insert(0, os.environ['PYTHON_MODULES_DIR'])
@@ -18,10 +19,23 @@ logger = logging.getLogger()
 visit_info = imsim_deep_utils.get_visit_info()
 sensor_number = int(os.environ['SENSOR_NUMBER'])
 sensor_id = imsim_deep_utils.sensors()[sensor_number]
+sensor_id_slug = re.sub('[:, ]', '_', sensor_id)
 output_dir = os.path.join(os.environ['OUTPUT_DATA_DIR'],
-                          '%07i' % visit_info.obsHistId)
+                          '%07i' % visit_info.obsHistId,
+                          sensor_id_slug)
+if not os.path.isdir(output_dir):
+    os.makedirs(output_dir)
+
+try:
+    instcat_file = os.path.join(output_dir, 'instcat_' + sensor_id_slug
+                                + '.txt')
+    imsim_deep_utils.trim_instcat(sensor_id, visit_info.instcat_file,
+                                  instcat_file)
+except ImportError as eObj:
+    logger.info(str(eObj))
+    instcat_file = visit_info.instcat_file
 
 command = ('imsim.py %s --outdir %s --sensor "%s" --log_level DEBUG'
-           % (visit_info.instcat_file, output_dir, sensor_id))
+           % (instcat_file, output_dir, sensor_id))
 logger.info("running %s", command)
 subprocess.check_call(command, shell=True)

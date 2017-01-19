@@ -9,4 +9,5 @@ setup -r /nfs/farm/g/desc/u1/imsim_deep/sims_GalSimInterface -j
 setup -r /nfs/farm/g/desc/u1/imsim_deep/sims_catUtils -j
 setup -r /nfs/farm/g/desc/u1/imsim_deep/sims_utils -j
 setup -r /nfs/farm/g/desc/u1/imsim_deep/imSim -j
+setup -r /nfs/farm/g/desc/u1/imsim_deep/ImSimDeep -j
 PS1="[twinkles_stack] "
