@@ -42,9 +42,8 @@ def sensors():
         are excluded.
     """
     corners = ((0, 0), (0, 4), (4, 0), (4, 4))
-#    raft_ids = ['R:%i,%i' % x for x in itertools.product(range(5), range(5))
-#                if x not in corners]
-    raft_ids = ['R:2,2']
+    raft_ids = ['R:%i,%i' % x for x in itertools.product(range(5), range(5))
+                if x not in corners]
     sensor_ids = ['S:%i,%i' % x for x in itertools.product(range(3), range(3))]
     return [' '.join(x) for x in itertools.product(raft_ids, sensor_ids)]
 
@@ -76,7 +75,7 @@ def trim_instcat(chipname, infile, outfile, radius=0.18):
     import desc.imsimdeep
 
     camera = obs_lsstSim.LsstSimMapper().camera
-    instcat = desc.imsim.parsePhoSimInstanceFile(infile)
+    instcat = desc.imsim.parsePhoSimInstanceFile(infile, numRows=100)
     obs_md = desc.imsimdeep.obs_metadata(instcat.commands)
     # Get the chip sensor coordinates in degrees.
     ra, dec = raDecFromPixelCoords(2036, 2000, chipname, camera=camera,

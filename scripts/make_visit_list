@@ -14,6 +14,7 @@ logger = logging.getLogger()
 
 opsim_db_file = os.environ['OPSIM_DB_FILE']
 conn = sqlite3.connect(opsim_db_file)
+logger.info("Reading %s", opsim_db_file)
 
 field_id_file = os.environ['FIELD_ID_FILE']
 visit_list_file = os.environ['VISIT_LIST_FILE']
