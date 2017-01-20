@@ -9,16 +9,15 @@ import sys
 import re
 import logging
 import subprocess
-sys.path.insert(0, os.environ['PYTHON_MODULES_DIR'])
-import imsim_deep_utils
+import desc.imsim_deep_pipeline
 
 logging.basicConfig(format="run_imsim: %(message)s", level=logging.INFO,
                     stream=sys.stdout)
 logger = logging.getLogger()
 
-visit_info = imsim_deep_utils.get_visit_info()
+visit_info = desc.imsim_deep_pipeline.get_visit_info()
 sensor_number = int(os.environ['SENSOR_NUMBER'])
-sensor_id = imsim_deep_utils.sensors()[sensor_number]
+sensor_id = desc.imsim_deep_pipeline.sensors()[sensor_number]
 sensor_id_slug = re.sub('[:, ]', '_', sensor_id)
 output_dir = os.path.join(os.environ['OUTPUT_DATA_DIR'],
                           '%07i' % visit_info.obsHistId,
@@ -29,13 +28,17 @@ if not os.path.isdir(output_dir):
 try:
     instcat_file = os.path.join(output_dir, 'instcat_' + sensor_id_slug
                                 + '.txt')
-    imsim_deep_utils.trim_instcat(sensor_id, visit_info.instcat_file,
-                                  instcat_file)
+    desc.imsim_deep_pipeline.trim_instcat(sensor_id, visit_info.instcat_file,
+                                          instcat_file)
 except ImportError as eObj:
     logger.info(str(eObj))
     instcat_file = visit_info.instcat_file
 
 command = ('imsim.py %s --outdir %s --sensor "%s" --log_level DEBUG'
            % (instcat_file, output_dir, sensor_id))
+logger.info("running %s", command)
+subprocess.check_call(command, shell=True)
+
+command = "gzip %s/lsst_e*.fits" % output_dir
 logger.info("running %s", command)
 subprocess.check_call(command, shell=True)
