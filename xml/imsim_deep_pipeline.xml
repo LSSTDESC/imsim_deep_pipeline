@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <pipeline xmlns="http://glast-ground.slac.stanford.edu/pipeline" xmlns:xs="http://www.w3.org/2001/XMLSchema-instance" xs:schemaLocation="http://glast-ground.slac.stanford.edu/pipeline           http://srs.slac.stanford.edu/Pipeline-II/schemas/2.1/pipeline.xsd">
-    <task name="imsim_deep_pipeline" type="LSST" version="0.5">
+    <task name="imsim_deep_pipeline" type="LSST" version="0.6">
         <variables>
             <var name="SITE">SLAC</var>
             <var name="MAXCPU">${100000 / (SITE==&quot;NERSC&quot; ? 10 : 1)}</var>
@@ -16,7 +16,11 @@
 
             <var name="SCRIPT_DIR">${PIPELINE_CODE_DIR}/bin</var>
             <var name="SETUP_DIR">${PIPELINE_CODE_DIR}/setup</var>
-            <var name="JYTHON_MODULES_DIR">${PIPELINE_CODE_DIR}/jython</var>
+
+            <!-- Location of jython module (must be nfs at SLAC) -->
+            <var name="SLAC_JYTHON_MODULES_DIR">/nfs/farm/g/desc/u1/imsim_deep/imsim_deep_pipeline/jython</var>
+            <var name="NERSC_JYTHON_MODULES_DIR">${NERSC_PIPELINE_CODE_DIR}/jython</var>
+            <var name="JYTHON_MODULES_DIR">${SITE==&quot;NERSC&quot; ? NERSC_JYTHON_MODULES_DIR : SLAC_JYTHON_MODULES_DIR}</var>
 
             <!-- imsim_deep setup file -->
             <var name="SLAC_SETUP">slac_setup.sh</var>
