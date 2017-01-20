@@ -4,11 +4,11 @@ Create instance catalogs via CatSim for each imsim_deep visit.
 """
 from __future__ import absolute_import, print_function
 import os
-import numpy as np
 import copy
 import sys
 import logging
 import warnings
+import numpy as np
 with warnings.catch_warnings():
     warnings.filterwarnings('ignore', 'Duplicate object type id', UserWarning)
     warnings.filterwarnings('ignore', 'duplicate object identifie', UserWarning)
@@ -19,8 +19,7 @@ with warnings.catch_warnings():
     from lsst.sims.catUtils.exampleCatalogDefinitions.phoSimCatalogExamples \
         import PhoSimCatalogPoint, PhoSimCatalogSersic2D
 
-sys.path.insert(0, os.environ['PYTHON_MODULES_DIR'])
-import imsim_deep_utils
+import desc.imsim_deep_pipeline
 
 logging.basicConfig(format="make_instcat: %(message)s", level=logging.INFO,
                     stream=sys.stdout)
@@ -34,7 +33,7 @@ db_config = dict(database='LSSTCATSIM',
 opsim_db_file = os.environ['OPSIM_DB_FILE']
 gen = ObservationMetaDataGenerator(database=opsim_db_file, driver='sqlite')
 
-visit_info = imsim_deep_utils.get_visit_info()
+visit_info = desc.imsim_deep_pipeline.get_visit_info()
 obs_md = gen.getObservationMetaData(obsHistID=visit_info.obsHistId,
                                     boundLength=visit_info.instcat_radius)[0]
 
@@ -69,7 +68,6 @@ try:
 except KeyError:
     warnings.warn('ObservationMetaData does not contain %s data' % dithered_rot_tel_pos_name)
 
-
 star_objs = ['msstars', 'bhbstars', 'wdstars', 'rrlystars', 'cepheidstars']
 gal_objs = ['galaxyBulge', 'galaxyDisk']
 
@@ -87,9 +85,10 @@ for objid in star_objs:
         phosim_object.write_catalog(visit_info.instcat_file, write_mode='a',
                                     write_header=False, chunk_size=20000)
 
-for objid in gal_objs:
-    logger.info("processing %s", objid)
-    db_obj = CatalogDBObject.from_objid(objid, **db_config)
-    phosim_object = PhoSimCatalogSersic2D(db_obj, obs_metadata=obs_md)
-    phosim_object.write_catalog(visit_info.instcat_file, write_mode='a',
-                                write_header=False, chunk_size=20000)
+if os.environ['STARS_ONLY'] != 'true':
+    for objid in gal_objs:
+        logger.info("processing %s", objid)
+        db_obj = CatalogDBObject.from_objid(objid, **db_config)
+        phosim_object = PhoSimCatalogSersic2D(db_obj, obs_metadata=obs_md)
+        phosim_object.write_catalog(visit_info.instcat_file, write_mode='a',
+                                    write_header=False, chunk_size=20000)

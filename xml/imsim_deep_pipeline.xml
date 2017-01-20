@@ -45,6 +45,7 @@
             <var name="NUM_SENSORS">189</var>
             <var name="VISIT_NUM_MIN">0</var>
             <var name="VISIT_NUM_MAX">4000</var>
+            <var name="STARS_ONLY">false</var>
         </variables>
 
         <process name="make_visit_list" site="${JOBSITE}">

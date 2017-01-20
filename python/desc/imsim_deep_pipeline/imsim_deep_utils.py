@@ -5,11 +5,18 @@ from __future__ import absolute_import
 import os
 import itertools
 from collections import namedtuple
+import lsst.obs.lsstSim as obs_lsstSim
+from lsst.sims.coordUtils import raDecFromPixelCoords
+from lsst.sims.photUtils import LSSTdefaults
+from lsst.sims.utils import ObservationMetaData
+import desc.imsim
+from .instcat_utils import sky_cone_select
 
-__all__ = ['get_visit_info', 'sensors', 'trim_instcat']
+__all__ = ['get_visit_info', 'sensors', 'obs_metadata', 'trim_instcat']
 
-visit_info = namedtuple('visit_info',
-                        ('obsHistId', 'instcat_file', 'instcat_radius'))
+VisitInfo = namedtuple('VisitInfo',
+                       ('obsHistId', 'instcat_file', 'instcat_radius'))
+
 
 def get_visit_info():
     """
@@ -29,7 +36,8 @@ def get_visit_info():
         os.mkdir(instcat_dir)
     instcat_file = os.path.join(instcat_dir, 'instcat_%07i_%s_%.1f.txt'
                                 % (obsHistId, lsst_band, instcat_radius))
-    return visit_info(obsHistId, instcat_file, instcat_radius)
+    return VisitInfo(obsHistId, instcat_file, instcat_radius)
+
 
 def sensors():
     """
@@ -46,6 +54,26 @@ def sensors():
                 if x not in corners]
     sensor_ids = ['S:%i,%i' % x for x in itertools.product(range(3), range(3))]
     return [' '.join(x) for x in itertools.product(raft_ids, sensor_ids)]
+
+
+def obs_metadata(commands):
+    """
+    Create an ObservationMetaData instance from phosim commands.
+    Parameters
+    ----------
+    commands : dict
+        Dictionary of phosim instance catalog commands.
+    Returns:
+    lsst.sims.utils.ObservationMetaData
+    """
+    return ObservationMetaData(pointingRA=commands['rightascension'],
+                               pointingDec=commands['declination'],
+                               mjd=commands['mjd'],
+                               rotSkyPos=commands['rotskypos'],
+                               bandpassName=commands['bandpass'],
+                               m5=LSSTdefaults().m5(commands['bandpass']),
+                               seeing=commands['seeing'])
+
 
 def trim_instcat(chipname, infile, outfile, radius=0.18):
     """
@@ -69,15 +97,10 @@ def trim_instcat(chipname, infile, outfile, radius=0.18):
     -----
     This function depends on the optional ImSimDeep package.
     """
-    import lsst.obs.lsstSim as obs_lsstSim
-    from lsst.sims.coordUtils import raDecFromPixelCoords
-    import desc.imsim
-    import desc.imsimdeep
-
     camera = obs_lsstSim.LsstSimMapper().camera
     instcat = desc.imsim.parsePhoSimInstanceFile(infile, numRows=100)
-    obs_md = desc.imsimdeep.obs_metadata(instcat.commands)
+    obs_md = obs_metadata(instcat.commands)
     # Get the chip sensor coordinates in degrees.
     ra, dec = raDecFromPixelCoords(2036, 2000, chipname, camera=camera,
                                    obs_metadata=obs_md)
-    desc.imsimdeep.sky_cone_select(infile, ra, dec, radius, outfile)
+    sky_cone_select(infile, ra, dec, radius, outfile)
