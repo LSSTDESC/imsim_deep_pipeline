@@ -42,3 +42,6 @@ subprocess.check_call(command, shell=True)
 command = "gzip %s/lsst_e*.fits" % output_dir
 logger.info("running %s", command)
 subprocess.check_call(command, shell=True)
+
+logger.info("deleting %s" % instcat_file)
+os.remove(instcat_file)
