@@ -75,32 +75,33 @@ def obs_metadata(commands):
                                seeing=commands['seeing'])
 
 
-def trim_instcat(chipname, infile, outfile, radius=0.18):
-    """
-    Trim an instance catalog to an acceptance cone centered on the
-    specified sensor.
+def trim_instcat(chipname, obs_par_file, object_file, outfile, radius=0.18):
+
+    """Trim an instance catalog of objects to an acceptance cone centered
+    on the specified sensor.  The observing parameters will be extracted
+    from the obs_par_file, which can be the same as object_file.
 
     Parameters
     ----------
     chipname : str
         The name of the sensor, e.g., 'R:2,2 S:1,1'.
-    infile : str
-        The filename of the instance catalog to be trimmed.
+    obs_par_file : str
+        The filename of the instance catalog containing the desired
+        observing parameters.
+    object_file : str
+        The filename of the instance catalog containing the objects to
+        be trimmed.
     outfile : str
-        The output filename for the trimmed data.
+        The output filename for the trimmed instance catalog data.
     radius : float, optional
         The radius of the acceptance cone in degrees.  Default: 0.18;
         this includes some buffer to account for differing pixel
         geometries for ITL vs e2v sensors.
-
-    Notes
-    -----
-    This function depends on the optional ImSimDeep package.
     """
     camera = obs_lsstSim.LsstSimMapper().camera
-    instcat = desc.imsim.parsePhoSimInstanceFile(infile, numRows=100)
+    instcat = desc.imsim.parsePhoSimInstanceFile(obs_par_file, numRows=100)
     obs_md = obs_metadata(instcat.commands)
     # Get the chip sensor coordinates in degrees.
     ra, dec = raDecFromPixelCoords(2036, 2000, chipname, camera=camera,
                                    obs_metadata=obs_md)
-    sky_cone_select(infile, ra, dec, radius, outfile)
+    sky_cone_select(obs_par_file, object_file, ra, dec, radius, outfile)

@@ -25,14 +25,16 @@ output_dir = os.path.join(os.environ['OUTPUT_DATA_DIR'],
 if not os.path.isdir(output_dir):
     os.makedirs(output_dir)
 
-try:
-    instcat_file = os.path.join(output_dir, 'instcat_' + sensor_id_slug
-                                + '.txt')
-    desc.imsim_deep_pipeline.trim_instcat(sensor_id, visit_info.instcat_file,
-                                          instcat_file)
-except ImportError as eObj:
-    logger.info(str(eObj))
-    instcat_file = visit_info.instcat_file
+cache_file \
+    = os.path.join(os.environ['OUTPUT_DATA_DIR'], 'object_cache_info.pkl')
+cache_info = desc.imsim_deep_pipeline.ObjectCacheInfo.load(cache_file)
+
+instcat_file = os.path.join(output_dir, 'instcat_' + sensor_id_slug + '.txt')
+obs_par_file = visit_info.instcat_file
+object_file = cache_info.get_object_files(obs_par_file,
+                                          visit_info.instcat_radius)[0]
+desc.imsim_deep_pipeline.trim_instcat(sensor_id, obs_par_file, object_file,
+                                      instcat_file)
 
 command = ('imsim.py %s --outdir %s --sensor "%s" --log_level DEBUG'
            % (instcat_file, output_dir, sensor_id))
@@ -42,3 +44,6 @@ subprocess.check_call(command, shell=True)
 command = "gzip %s/lsst_e*.fits" % output_dir
 logger.info("running %s", command)
 subprocess.check_call(command, shell=True)
+
+logger.info("deleting %s" % instcat_file)
+os.remove(instcat_file)

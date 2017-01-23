@@ -6,7 +6,6 @@ import os
 from collections import namedtuple
 import unittest
 import numpy as np
-import lsst.obs.lsstSim as obs_lsstSim
 import desc.imsim
 import desc.imsim_deep_pipeline
 
@@ -53,8 +52,10 @@ class InstcatToolsTestCase(unittest.TestCase):
         ra = 53.0449009
         dec = -27.3220807
         radius = 0.1
-        desc.imsim_deep_pipeline.sky_cone_select(self.instcat_file, ra, dec,
-                                                 radius, outfile)
+        desc.imsim_deep_pipeline.sky_cone_select(self.instcat_file,
+                                                 self.instcat_file,
+                                                 ra, dec, radius,
+                                                 outfile)
         objs = self._read_instcat(outfile)
         self.assertEqual(len(objs), 1)
         self.assertEqual(objs[0].objectID, 992886536196)

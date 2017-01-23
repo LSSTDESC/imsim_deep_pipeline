@@ -16,16 +16,27 @@ namespace imsim_deep_pipeline {
       return coord0.angularSeparation(coord1).asDegrees();
    }
 
-   void sky_cone_select(const std::string & infile,
+   void sky_cone_select(const std::string & obs_par_file,
+                        const std::string & object_file,
                         double ra, double dec, double radius,
                         const std::string & outfile) {
-      std::ifstream input(infile.c_str());
       std::ofstream output(outfile.c_str());
       std::string line;
-      while (std::getline(input, line, '\n')) {
-         if (line.substr(0, 6) != "object") {
-            output << line << std::endl;
-         } else {
+
+      // Stream the observing parameters directly to the output file.
+      std::ifstream obs_pars(obs_par_file.c_str());
+      while (std::getline(obs_pars, line, '\n')) {
+         if (line.substr(0, 6) == "object") {
+            break;
+         }
+         output << line << std::endl;
+      }
+      obs_pars.close();
+
+      // Stream the objects, filtering by the desired acceptance cone.
+      std::ifstream objects(object_file.c_str());
+      while (std::getline(objects, line, '\n')) {
+         if (line.substr(0, 6) == "object") {
             std::string command;
             std::string objectID;
             double ra_obj, dec_obj;
@@ -37,7 +48,8 @@ namespace imsim_deep_pipeline {
             }
          }
       }
-      input.close();
+      objects.close();
+
       output.close();
    }
 } // namespace imsim_deep_pipeline
