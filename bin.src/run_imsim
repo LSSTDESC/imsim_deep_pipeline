@@ -41,7 +41,7 @@ command = ('imsim.py %s --outdir %s --sensor "%s" --log_level DEBUG'
 logger.info("running %s", command)
 subprocess.check_call(command, shell=True)
 
-command = "gzip %s/lsst_e*.fits" % output_dir
+command = "gzip %s/lsst_e*_%s*.fits" % (output_dir, sensor_id_slug)
 logger.info("running %s", command)
 subprocess.check_call(command, shell=True)
 
