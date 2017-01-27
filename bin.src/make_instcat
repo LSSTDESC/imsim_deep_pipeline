@@ -33,11 +33,12 @@ class PhoSimPointICRS(PhoSimCatalogPoint):
     catalog_type = 'phoSim_catalog_POINT_ICRS'
 
     column_outputs = ['prefix', 'uniqueId', 'raJ2000', 'decJ2000',
-                      'properMotionRa', 'properMotionDec', 'parallax', 'radialVelocity',
                       'phoSimMagNorm', 'sedFilepath',
                       'redshift', 'shear1', 'shear2', 'kappa', 'raOffset', 'decOffset',
                       'spatialmodel', 'internalExtinctionModel',
-                      'galacticExtinctionModel', 'galacticAv', 'galacticRv']
+                      'galacticExtinctionModel', 'galacticAv', 'galacticRv',
+                       'properMotionRa', 'properMotionDec', 'parallax', 'radialVelocity']
+]
 
     transformations = {'raJ2000': np.degrees, 'decJ2000': np.degrees,
                        'properMotionRa': arcsecFromRadians,
