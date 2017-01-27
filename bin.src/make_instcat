@@ -13,6 +13,7 @@ import numpy as np
 with warnings.catch_warnings():
     warnings.filterwarnings('ignore', 'Duplicate object type id', UserWarning)
     warnings.filterwarnings('ignore', 'duplicate object identifie', UserWarning)
+    from lsst.sims.utils import arcsecFromRadians
     from lsst.sims.catalogs.db import CatalogDBObject
     from lsst.sims.catUtils.utils import ObservationMetaDataGenerator
     from lsst.sims.catUtils.exampleCatalogDefinitions \
@@ -25,6 +26,38 @@ import desc.imsim_deep_pipeline
 logging.basicConfig(format="make_instcat: %(message)s", level=logging.INFO,
                     stream=sys.stdout)
 logger = logging.getLogger()
+
+
+class PhoSimPointICRS(PhoSimCatalogPoint):
+
+    catalog_type = 'phoSim_catalog_POINT_ICRS'
+
+    column_outputs = ['prefix', 'uniqueId', 'raJ2000', 'decJ2000',
+                      'properMotionRa', 'properMotionDec', 'parallax', 'radialVelocity',
+                      'phoSimMagNorm', 'sedFilepath',
+                      'redshift', 'shear1', 'shear2', 'kappa', 'raOffset', 'decOffset',
+                      'spatialmodel', 'internalExtinctionModel',
+                      'galacticExtinctionModel', 'galacticAv', 'galacticRv']
+
+    transformations = {'raJ2000': np.degrees, 'decJ2000': np.degrees,
+                       'properMotionRa': arcsecFromRadians,
+                       'properMotionDec': arcsecFromRadians,
+                       'parallax': arcsecFromRadians}
+
+
+class PhoSimSersic2dICRS(PhoSimCatalogSersic2D):
+
+    catalog_type = 'phoSim_catalog_SERSIC2D_ICRS'
+
+    column_outputs = ['prefix', 'uniqueId', 'raJ2000', 'decJ2000', 'phoSimMagNorm', 'sedFilepath',
+                      'redshift', 'shear1', 'shear2', 'kappa', 'raOffset', 'decOffset',
+                      'spatialmodel', 'majorAxis', 'minorAxis', 'positionAngle', 'sindex',
+                      'internalExtinctionModel', 'internalAv', 'internalRv',
+                      'galacticExtinctionModel', 'galacticAv', 'galacticRv',]
+
+    transformations = {'raJ2000': np.degrees, 'decJ2000': np.degrees, 'positionAngle': np.degrees,
+                       'majorAxis': arcsecFromRadians, 'minorAxis': arcsecFromRadians}
+
 
 def make_obs_par_file(obs_md, db_config, phosim_header_map, outfile):
     """
@@ -42,7 +75,7 @@ def make_obs_par_file(obs_md, db_config, phosim_header_map, outfile):
         Filename of the instance catalog.
     """
     db_obj = CatalogDBObject.from_objid('msstars', **db_config)
-    phosim_object = PhoSimCatalogPoint(db_obj, obs_metadata=obs_md)
+    phosim_object = PhoSimPointICRS(db_obj, obs_metadata=obs_md)
     phosim_object.phoSimHeaderMap = phosim_header_map
     with open(outfile, 'w') as output:
         phosim_object.write_header(output)
@@ -69,7 +102,7 @@ def make_instance_catalog(obs_md, db_config, phosim_header_map, outfile):
     for objid in star_objs:
         logger.info("processing %s", objid)
         db_obj = CatalogDBObject.from_objid(objid, **db_config)
-        phosim_object = PhoSimCatalogPoint(db_obj, obs_metadata=obs_md)
+        phosim_object = PhoSimPointICRS(db_obj, obs_metadata=obs_md)
         if do_header:
             phosim_object.phoSimHeaderMap = phosim_header_map
             phosim_object.write_catalog(outfile, write_mode='w',
@@ -83,7 +116,7 @@ def make_instance_catalog(obs_md, db_config, phosim_header_map, outfile):
         for objid in gal_objs:
             logger.info("processing %s", objid)
             db_obj = CatalogDBObject.from_objid(objid, **db_config)
-            phosim_object = PhoSimCatalogSersic2D(db_obj, obs_metadata=obs_md)
+            phosim_object = PhoSimSersic2dICRS(db_obj, obs_metadata=obs_md)
             phosim_object.write_catalog(outfile, write_mode='a',
                                         write_header=False, chunk_size=20000)
 
