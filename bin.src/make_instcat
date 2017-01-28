@@ -37,8 +37,8 @@ class PhoSimPointICRS(PhoSimCatalogPoint):
                       'redshift', 'shear1', 'shear2', 'kappa', 'raOffset', 'decOffset',
                       'spatialmodel', 'internalExtinctionModel',
                       'galacticExtinctionModel', 'galacticAv', 'galacticRv',
-                       'properMotionRa', 'properMotionDec', 'parallax', 'radialVelocity']
-]
+                      'properMotionRa', 'properMotionDec', 'parallax', 'radialVelocity']
+
 
     transformations = {'raJ2000': np.degrees, 'decJ2000': np.degrees,
                        'properMotionRa': arcsecFromRadians,
