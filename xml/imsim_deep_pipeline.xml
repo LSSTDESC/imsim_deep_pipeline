@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <pipeline xmlns="http://glast-ground.slac.stanford.edu/pipeline" xmlns:xs="http://www.w3.org/2001/XMLSchema-instance" xs:schemaLocation="http://glast-ground.slac.stanford.edu/pipeline           http://srs.slac.stanford.edu/Pipeline-II/schemas/2.1/pipeline.xsd">
-    <task name="imsim_deep_pipeline" type="LSST" version="0.6">
+    <task name="imsim_deep_pipeline" type="LSST" version="0.7">
         <variables>
             <var name="SITE">SLAC</var>
             <var name="MAXCPU">${100000 / (SITE==&quot;NERSC&quot; ? 10 : 1)}</var>
@@ -8,6 +8,10 @@
             <var name="SLAC_BATCH_OPTIONS">-R rhel60 -R bullet</var>
             <var name="NERSC_BATCH_OPTIONS">-p shared | -L SCRATCH</var>
             <var name="BATCH_OPTIONS">${SITE==&quot;NERSC&quot; ? NERSC_BATCH_OPTIONS : SLAC_BATCH_OPTIONS}</var>
+
+            <var name="SLAC_logRoot">/nfs/farm/g/desc/u2/data/imsim_deep/logs</var>
+            <var name="NERSC_logRoot">/global/cscratch1/sd/jchiang8/imsim_deep/logs</var>
+            <var name="logRoot">${SITE==&quot;NERSC&quot; ? NERSC_logRoot : SLAC_logRoot}</var>
 
             <!-- Base directory for imsim_deep_pipeline code -->
             <var name="SLAC_PIPELINE_CODE_DIR">/gpfs/slac/kipac/fs1/g/desc/imsim_deep/imsim_deep_pipeline</var>
