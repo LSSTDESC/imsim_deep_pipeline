@@ -15,9 +15,21 @@ logging.basicConfig(format="run_imsim: %(message)s", level=logging.INFO,
                     stream=sys.stdout)
 logger = logging.getLogger()
 
+file_list = os.path.join(os.environ['OUTPUT_DATA_DIR'],
+                         'incomplete_processes.txt')
+if not os.path.isfile(file_list):
+    file_list = None
+sensors = desc.imsim_deep_pipeline.SensorLists(file_list)
+
 visit_info = desc.imsim_deep_pipeline.get_visit_info()
 sensor_number = int(os.environ['SENSOR_NUMBER'])
-sensor_id = desc.imsim_deep_pipeline.sensors()[sensor_number]
+
+try:
+    sensor_id = sensors(visit_info.obsHistId)[sensor_number]
+except IndexError:
+    print("This sensor-visit was already successfully simulated. Exiting")
+    sys.exit(0)
+
 sensor_id_slug = re.sub('[:, ]', '_', sensor_id)
 output_dir = os.path.join(os.environ['OUTPUT_DATA_DIR'],
                           '%07i' % visit_info.obsHistId,

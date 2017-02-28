@@ -1,0 +1,20 @@
+/nfs/farm/g/desc/u2/data/imsim_deep/pipeline/output/full_focalplane_undithered/0193223/R_0_2_S_2_1/lsst_e_193223_R_0_2_S_2_1_r.fits.gz
+/nfs/farm/g/desc/u2/data/imsim_deep/pipeline/output/full_focalplane_undithered/0193223/R_4_1_S_2_0/lsst_e_193223_R_4_1_S_2_0_r.fits.gz
+/nfs/farm/g/desc/u2/data/imsim_deep/pipeline/output/full_focalplane_undithered/0195755/R_1_4_S_2_1/lsst_e_195755_R_1_4_S_2_1_r.fits.gz
+/nfs/farm/g/desc/u2/data/imsim_deep/pipeline/output/full_focalplane_undithered/0195755/R_2_4_S_0_0/lsst_e_195755_R_2_4_S_0_0_r.fits.gz
+/nfs/farm/g/desc/u2/data/imsim_deep/pipeline/output/full_focalplane_undithered/0201793/R_0_1_S_0_0/lsst_e_201793_R_0_1_S_0_0_r.fits.gz
+/nfs/farm/g/desc/u2/data/imsim_deep/pipeline/output/full_focalplane_undithered/0201793/R_0_1_S_0_1/lsst_e_201793_R_0_1_S_0_1_r.fits.gz
+/nfs/farm/g/desc/u2/data/imsim_deep/pipeline/output/full_focalplane_undithered/0201793/R_0_1_S_0_2/lsst_e_201793_R_0_1_S_0_2_r.fits.gz
+/nfs/farm/g/desc/u2/data/imsim_deep/pipeline/output/full_focalplane_undithered/0201793/R_0_1_S_1_0/lsst_e_201793_R_0_1_S_1_0_r.fits.gz
+/nfs/farm/g/desc/u2/data/imsim_deep/pipeline/output/full_focalplane_undithered/0201793/R_0_1_S_1_1/lsst_e_201793_R_0_1_S_1_1_r.fits.gz
+/nfs/farm/g/desc/u2/data/imsim_deep/pipeline/output/full_focalplane_undithered/0201793/R_0_1_S_1_2/lsst_e_201793_R_0_1_S_1_2_r.fits.gz
+/nfs/farm/g/desc/u2/data/imsim_deep/pipeline/output/full_focalplane_undithered/0201793/R_0_1_S_2_0/lsst_e_201793_R_0_1_S_2_0_r.fits.gz
+/nfs/farm/g/desc/u2/data/imsim_deep/pipeline/output/full_focalplane_undithered/0201793/R_0_1_S_2_1/lsst_e_201793_R_0_1_S_2_1_r.fits.gz
+/nfs/farm/g/desc/u2/data/imsim_deep/pipeline/output/full_focalplane_undithered/0201793/R_0_1_S_2_2/lsst_e_201793_R_0_1_S_2_2_r.fits.gz
+/nfs/farm/g/desc/u2/data/imsim_deep/pipeline/output/full_focalplane_undithered/0201793/R_0_2_S_0_0/lsst_e_201793_R_0_2_S_0_0_r.fits.gz
+/nfs/farm/g/desc/u2/data/imsim_deep/pipeline/output/full_focalplane_undithered/0201793/R_0_2_S_0_1/lsst_e_201793_R_0_2_S_0_1_r.fits.gz
+38178
+
+real	546m29.695s
+user	471m16.106s
+sys	26m4.960s
