@@ -213,3 +213,12 @@ if __name__ == '__main__':
         cache_info.add_obj_file(visit_info.instcat_file,
                                 visit_info.instcat_radius)
         cache_info.save(cache_file)
+
+    # Set the number of sensors to simulate for the current visit
+    # if the dither info file is available.
+    dither_info_file = os.environ['DITHER_INFO_FILE']
+    if os.path.isfile(dither_info_file):
+        sensors = desc.imsim_deep_pipeline.SensorLists(dither_info_file=dither_info_file)
+        obsHistID = int(os.environ['OBSHISTID'])
+        command = "pipelineSet NUM_SENSOR_VISITS %i" % len(sensors(obsHistID))
+        subprocess.check_call(command, shell=True)

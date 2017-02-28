@@ -4,6 +4,7 @@ Utilities for the imsim_deep pipeline python code.
 from __future__ import absolute_import
 import os
 import itertools
+import pickle
 from collections import namedtuple, defaultdict
 import lsst.obs.lsstSim as obs_lsstSim
 from lsst.sims.coordUtils import raDecFromPixelCoords
@@ -39,7 +40,7 @@ def get_visit_info():
     return VisitInfo(obsHistId, instcat_file, instcat_radius)
 
 
-def get_visit_sensor_dict(infile):
+def get_invalid_sensor_visit_dict(infile):
     """
     Generate a dictionary of lists of chip names keyed by obsHistID
     from the list of invalid FITS files.
@@ -73,19 +74,27 @@ class SensorLists(object):
     of obsHistID.
     """
 
-    def __init__(self, missing_fits_files=None):
+    def __init__(self, dither_info_file=None, missing_fits_files=None):
         """
         Constructor.
 
         Parameters
         ----------
+        dither_info_file : str, optional
+            Name of pickle file containing the list of chips per visit
+            for a dithered observing schedule.  If None (default), then
+            the missing_fits_files keyword argument is considered.
         missing_fits_files : str, optional
             File containing a list of the full paths to the missing or
             invalid FITS eimages.  If None (default), then have the __call__
             function return all science sensors in the focal plane.
         """
+        if dither_info_file is not None:
+            dither_info = pickle.load(dither_info_file)
+            self.visits = dict([kv for kv in zip(dither_info['obsHistID'],
+                                                 dither_info['chipNames'])])
         if missing_fits_files is not None:
-            self.visits = get_visit_sensor_dict(missing_fits_files)
+            self.visits = get_invalid_sensor_visit_dict(missing_fits_files)
         else:
             self.visits = None
             self.sensors = self._all_sensors()

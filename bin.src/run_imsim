@@ -15,11 +15,14 @@ logging.basicConfig(format="run_imsim: %(message)s", level=logging.INFO,
                     stream=sys.stdout)
 logger = logging.getLogger()
 
-file_list = os.path.join(os.environ['OUTPUT_DATA_DIR'],
-                         'incomplete_processes.txt')
-if not os.path.isfile(file_list):
-    file_list = None
-sensors = desc.imsim_deep_pipeline.SensorLists(file_list)
+dither_info_file = os.environ['DITHER_INFO_FILE']
+missing_fits_files = os.environ['MISSING_FITS_FILES']
+if os.path.isfile(dither_info_file):
+    sensors = desc.imsim_deep_pipeline.SensorLists(dither_info_file=dither_info_file)
+elif os.path.isfile(missing_fits_files):
+    sensors = desc.imsim_deep_pipeline.SensorLists(missing_fits_files=missing_fits_files)
+else:
+    sensors = desc.imsim_deep_pipeline.SensorLists()
 
 visit_info = desc.imsim_deep_pipeline.get_visit_info()
 sensor_number = int(os.environ['SENSOR_NUMBER'])

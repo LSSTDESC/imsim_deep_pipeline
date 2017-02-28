@@ -23,7 +23,13 @@ def submit_imsim_jobs():
     Loop over the sensors and submit the imsim_tasks.
     """
     job_vars = HashMap()
-    num_sensors = int(NUM_SENSORS)
+    try:
+        # If make_instcat sets the number of sensor-visits to submit,
+        # use that value; otherwise, use the global default.
+        make_instcat = pipeline.getProcessInstance("make_instcat")
+        num_sensors = int(make_instcat.getVariable("NUM_SENSOR_VISITS"))
+    except:
+        num_sensors = int(NUM_SENSORS)
     for sensor_number in range(num_sensors):
         job_vars.put('SENSOR_NUMBER', sensor_number)
         pipeline.createSubstream('imsim_task', sensor_number, job_vars)
