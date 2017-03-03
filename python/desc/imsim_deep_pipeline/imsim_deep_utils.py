@@ -89,11 +89,16 @@ class SensorLists(object):
             invalid FITS eimages.  If None (default), then have the __call__
             function return all science sensors in the focal plane.
         """
+        corners = ('R:0,0', 'R:0,4', 'R:4,0', 'R:4,4')
         if dither_info_file is not None:
-            dither_info = pickle.load(dither_info_file)
-            self.visits = dict([kv for kv in zip(dither_info['obsHistID'],
-                                                 dither_info['chipNames'])])
-        if missing_fits_files is not None:
+            dither_info = pickle.load(open(dither_info_file))
+            self.visits = dict()
+            for obsHistID, chip_names in zip(dither_info['obsHistID'],
+                                             dither_info['chipNames']):
+                # Remove the corner raft sensors.
+                self.visits[obsHistID] = [x for x in chip_names
+                                          if x[:len('R:0,0')] not in corners]
+        elif missing_fits_files is not None:
             self.visits = get_invalid_sensor_visit_dict(missing_fits_files)
         else:
             self.visits = None

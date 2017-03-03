@@ -6,4 +6,9 @@ echo 'added /nfs/farm/g/lsst/u1/software/redhat6-x86_64-64bit-gcc44/anaconda/py-
 setup lsst_sims
 setup -r /gpfs/slac/kipac/fs1/g/desc/imsim_deep/imSim -j
 setup -r /gpfs/slac/kipac/fs1/g/desc/imsim_deep/imsim_deep_pipeline -j
+
+# Use a copy of the SED library on gpfs to avoid nfs file contention issues.
+export SIMS_SED_LIBRARY_DIR=/gpfs/slac/kipac/fs1/g/desc/imsim_deep/sims_sed_library/2017.01.24
+export SIMS_SED_LIBRARY_DIR_EXTRA=/gpfs/slac/kipac/fs1/g/desc/imsim_deep/sims_sed_library/2017.01.24
+
 PS1="[twinkles_2017-02-21_stack] "

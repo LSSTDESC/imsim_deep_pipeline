@@ -9,6 +9,7 @@ import copy
 import sys
 import logging
 import warnings
+import subprocess
 import numpy as np
 with warnings.catch_warnings():
     warnings.filterwarnings('ignore', 'Duplicate object type id', UserWarning)
@@ -187,11 +188,12 @@ if __name__ == '__main__':
 
     obs_md, phosim_header_map = apply_dithering(obs_md)
 
-    # Write a observing parameter-only file both for checking the
-    # object cache and to be used by downstream processes with the
-    # cached object files.
-    make_obs_par_file(obs_md, db_config, phosim_header_map,
-                      visit_info.instcat_file)
+    # If the instcat file does not already exist, write an observing
+    # parameter-only file both for checking the object cache and to be
+    # used by downstream processes with the cached object files.
+    if not os.path.isfile(visit_info.instcat_file):
+        make_obs_par_file(obs_md, db_config, phosim_header_map,
+                          visit_info.instcat_file)
 
     # Check the cache to see if it is covered.
     cache_file = os.path.join(os.environ['OUTPUT_DATA_DIR'],
