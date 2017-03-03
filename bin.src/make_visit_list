@@ -1,43 +1,50 @@
 #!/usr/bin/env python
 """
-Make a list of visits given the list of field ids and the opsim db file.
+Make a list of visits given the list of field ids and the opsim db file or
+use the dither info file.
 """
 from __future__ import absolute_import
 import os
 import sys
 import logging
+import pickle
 import sqlite3
 
 logging.basicConfig(format="make_visit_list: %(message)s", level=logging.INFO,
                     stream=sys.stdout)
 logger = logging.getLogger()
 
-opsim_db_file = os.environ['OPSIM_DB_FILE']
-conn = sqlite3.connect(opsim_db_file)
-logger.info("Reading %s", opsim_db_file)
+dither_info_file = os.environ['DITHER_INFO_FILE']
+if os.path.isfile(dither_info_file):
+    dither_info = pickle.load(open(dither_info_file))
+    obsHistIds = sorted(list(set(dither_info['obsHistID'])))
+else:
+    opsim_db_file = os.environ['OPSIM_DB_FILE']
+    conn = sqlite3.connect(opsim_db_file)
+    logger.info("Reading %s", opsim_db_file)
 
-field_id_file = os.environ['FIELD_ID_FILE']
+    field_id_file = os.environ['FIELD_ID_FILE']
+
+    lsst_band = os.environ['LSST_BAND']
+
+    obsHistIds = []
+    logger.info('fieldId   # visits    total visits')
+    total_visits = 0
+    with open(field_id_file) as input_:
+        for line in input_:
+            if line.startswith('#'):
+                continue
+            fieldId = line.strip()
+            query = ("select distinct obsHistId from Summary where " +
+                     "fieldId=%s and filter='%s'" % (fieldId, lsst_band))
+            logger.debug("executing query: %s", query)
+            ids = [row[0] for row in conn.execute(query)]
+            total_visits += len(ids)
+            logger.info("%6ls       %i          %i", fieldId, len(ids),
+                        total_visits)
+            obsHistIds.extend(ids)
+
 visit_list_file = os.environ['VISIT_LIST_FILE']
-
-lsst_band = os.environ['LSST_BAND']
-
-obsHistIds = []
-logger.info('fieldId   # visits    total visits')
-total_visits = 0
-with open(field_id_file) as input_:
-    for line in input_:
-        if line.startswith('#'):
-            continue
-        fieldId = line.strip()
-        query = ("select distinct obsHistId from Summary where " +
-                 "fieldId=%s and filter='%s'" % (fieldId, lsst_band))
-        logger.debug("executing query: %s", query)
-        ids = [row[0] for row in conn.execute(query)]
-        total_visits += len(ids)
-        logger.info("%6ls       %i          %i", fieldId, len(ids),
-                    total_visits)
-        obsHistIds.extend(ids)
-
 with open(visit_list_file, 'w') as output:
     for obsHistId in obsHistIds:
         output.write('%i\n' % obsHistId)
