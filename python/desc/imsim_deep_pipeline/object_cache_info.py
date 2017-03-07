@@ -45,8 +45,34 @@ class ObjectCacheInfo(object):
             raise RuntimeError("RA or Dec not found in %s" % object_file)
         return ra, dec
 
+    def get_nearest_object_file(self, candidate_file):
+        """
+        Find the nearest object file to the candidate file.
+
+        Parameters
+        ----------
+        candidate_file : str
+            Filename of observing parameters-only instance catalog that
+            needs to be covered by the cached catalogs.
+
+        Returns
+        -------
+        str :
+            Full path of the nearest object catalog in the cache.
+        """
+        candidate = self.make_object_catalog(candidate_file, 0.17)
+        min_sep = None
+        for catalog in self.catalogs:
+            sep = desc.imsim_deep_pipeline.ang_sep(candidate.ra, candidate.dec,
+                                                   catalog.ra, catalog.dec)
+            if min_sep is None or sep < min_sep:
+                min_sep = sep
+                selected_catalog = catalog
+        return selected_catalog.filename
+
     def get_object_files(self, candidate_file, radius):
-        """Find the instance catalog object files that cover the candidate
+        """
+        Find the instance catalog object files that cover the candidate
         file.
 
         Parameters
