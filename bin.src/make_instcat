@@ -195,26 +195,26 @@ if __name__ == '__main__':
         make_obs_par_file(obs_md, db_config, phosim_header_map,
                           visit_info.instcat_file)
 
-    # Check the cache to see if it is covered.
-    cache_file = os.path.join(os.environ['OUTPUT_DATA_DIR'],
-                              'object_cache_info.pkl')
-
-    cache_info = desc.imsim_deep_pipeline.ObjectCacheInfo()
-    try:
-        cache_info = cache_info.load(cache_file)
-        cache_info.get_object_files(visit_info.instcat_file,
-                                    visit_info.instcat_radius)
-        logger.info("Cached object data found for this visit.")
-    except (IOError, desc.imsim_deep_pipeline.ObjectCacheInfoException):
-        # Covering cached object data not found or cache doesn't exist
-        # yet, so create a full instance catalog and update or create
-        # the object cache.
-        logger.info("Creating a full instance catalog.")
-        make_instance_catalog(obs_md, db_config, phosim_header_map,
-                              visit_info.instcat_file)
-        cache_info.add_obj_file(visit_info.instcat_file,
-                                visit_info.instcat_radius)
-        cache_info.save(cache_file)
+#    # Check the cache to see if it is covered.
+#    cache_file = os.path.join(os.environ['OUTPUT_DATA_DIR'],
+#                              'object_cache_info.pkl')
+#
+#    cache_info = desc.imsim_deep_pipeline.ObjectCacheInfo()
+#    try:
+#        cache_info = cache_info.load(cache_file)
+#        cache_info.get_object_files(visit_info.instcat_file,
+#                                    visit_info.instcat_radius)
+#        logger.info("Cached object data found for this visit.")
+#    except (IOError, desc.imsim_deep_pipeline.ObjectCacheInfoException):
+#        # Covering cached object data not found or cache doesn't exist
+#        # yet, so create a full instance catalog and update or create
+#        # the object cache.
+#        logger.info("Creating a full instance catalog.")
+#        make_instance_catalog(obs_md, db_config, phosim_header_map,
+#                              visit_info.instcat_file)
+#        cache_info.add_obj_file(visit_info.instcat_file,
+#                                visit_info.instcat_radius)
+#        cache_info.save(cache_file)
 
     # Set the number of sensors to simulate for the current visit
     # if the dither info file is available.

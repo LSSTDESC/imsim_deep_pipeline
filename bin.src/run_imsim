@@ -49,8 +49,10 @@ cache_info = desc.imsim_deep_pipeline.ObjectCacheInfo.load(cache_file)
 
 instcat_file = os.path.join(output_dir, 'instcat_' + sensor_id_slug + '.txt')
 obs_par_file = visit_info.instcat_file
-object_file = cache_info.get_object_files(obs_par_file,
-                                          visit_info.instcat_radius)[0]
+#object_file = cache_info.get_object_files(obs_par_file,
+#                                          visit_info.instcat_radius)[0]
+object_file = cache_info.get_nearest_object_file(obs_par_file)
+logger.info("object_file: %s", object_file)
 desc.imsim_deep_pipeline.trim_instcat(sensor_id, obs_par_file, object_file,
                                       instcat_file)
 

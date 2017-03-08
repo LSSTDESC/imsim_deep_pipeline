@@ -39,6 +39,20 @@ class ObjectCacheInfoTest(unittest.TestCase):
             output.write('rightascension %.7f\n' % ra)
             output.write('declination %.7f\n' % dec)
 
+    def test_get_nearest_object_file(self):
+        """
+        Test for retrieving the nearest object file.
+        """
+        self.object_info_cache.add_obj_file(self.offset_file, 0.2)
+
+        candidate_file = 'candidate_file.txt'
+        self._make_instcat_file(candidate_file, 93.1078762, -29.9663229)
+
+        object_file \
+            = self.object_info_cache.get_nearest_object_file(candidate_file)
+        self.assertEqual(object_file, self.large_file)
+        os.remove(candidate_file)
+
     def test_caching(self):
         """
         Test for caching based on file pointing directions and trim
