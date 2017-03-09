@@ -45,13 +45,12 @@ class ObjectCacheInfoTest(unittest.TestCase):
         """
         self.object_info_cache.add_obj_file(self.offset_file, 0.2)
 
-        candidate_file = 'candidate_file.txt'
-        self._make_instcat_file(candidate_file, 93.1078762, -29.9663229)
+        candidate_file = 'object_catalog_test.txt'
 
         object_file \
-            = self.object_info_cache.get_nearest_object_file(candidate_file)
+            = self.object_info_cache.get_nearest_object_file(candidate_file,
+                                                             "R:2,2 S:1,1")
         self.assertEqual(object_file, self.large_file)
-        os.remove(candidate_file)
 
     def test_caching(self):
         """

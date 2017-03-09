@@ -13,7 +13,8 @@ from lsst.sims.utils import ObservationMetaData
 import desc.imsim
 from .instcat_utils import sky_cone_select
 
-__all__ = ['get_visit_info', 'SensorLists', 'obs_metadata', 'trim_instcat']
+__all__ = ['get_visit_info', 'SensorLists', 'obs_metadata',
+           'chip_center', 'trim_instcat']
 
 VisitInfo = namedtuple('VisitInfo',
                        ('obsHistId', 'instcat_file', 'instcat_radius'))
@@ -158,7 +159,42 @@ def obs_metadata(commands):
                                seeing=commands['seeing'])
 
 
-def trim_instcat(chipname, obs_par_file, object_file, outfile, radius=0.18):
+def chip_center(chip_name, obs_par_file, camera, ymid=2036, xmid=2000):
+    """
+    Compute the center of the specified chip for a given object
+    catalog file.
+
+    Parameters
+    ----------
+    chip_name : str
+        The name of the chip to use, e.g., "R:2,2 S:1,1".
+    obs_par_file : str
+        The object catalog file containing the observing parameters.
+        This file should be generated using CatSim code from an
+        OpSim-generated db file.
+    camera : lsst.afw.cameraGeom.camera.Camera object
+        This should be lsst.obs.lsstSim.LsstSimMapper().camera, but
+        needs to be computed before calling this function to save the
+        usual Stack overhead.
+    ymid : int, optional
+        The y-pixel index of the chip center. Default: 2036 (ITL-3800C sensor)
+    xmid : int, optional
+        The x-pixel index of the chip center. Default: 2000 (ITL-3800C sensor)
+
+    Returns
+    -------
+    tuple(float, float)
+        The RA, Dec of the chip center in degrees.
+    """
+    instcat = desc.imsim.parsePhoSimInstanceFile(obs_par_file, numRows=100)
+    obs_md = desc.imsim_deep_pipeline.obs_metadata(instcat.commands)
+    # Return the chip sensor coordinates in degrees.
+    return raDecFromPixelCoords(ymid, xmid, chip_name, camera=camera,
+                                obs_metadata=obs_md)
+
+
+def trim_instcat(chip_name, obs_par_file, object_file, outfile,
+                 ymid=2036, xmid=2000, radius=0.18):
 
     """Trim an instance catalog of objects to an acceptance cone centered
     on the specified sensor.  The observing parameters will be extracted
@@ -166,7 +202,7 @@ def trim_instcat(chipname, obs_par_file, object_file, outfile, radius=0.18):
 
     Parameters
     ----------
-    chipname : str
+    chip_name : str
         The name of the sensor, e.g., 'R:2,2 S:1,1'.
     obs_par_file : str
         The filename of the instance catalog containing the desired
@@ -176,15 +212,15 @@ def trim_instcat(chipname, obs_par_file, object_file, outfile, radius=0.18):
         be trimmed.
     outfile : str
         The output filename for the trimmed instance catalog data.
+    ymid : int, optional
+        The y-pixel index of the chip center. Default: 2036 (ITL-3800C sensor)
+    xmid : int, optional
+        The x-pixel index of the chip center. Default: 2000 (ITL-3800C sensor)
     radius : float, optional
         The radius of the acceptance cone in degrees.  Default: 0.18;
         this includes some buffer to account for differing pixel
         geometries for ITL vs e2v sensors.
     """
     camera = obs_lsstSim.LsstSimMapper().camera
-    instcat = desc.imsim.parsePhoSimInstanceFile(obs_par_file, numRows=100)
-    obs_md = obs_metadata(instcat.commands)
-    # Get the chip sensor coordinates in degrees.
-    ra, dec = raDecFromPixelCoords(2036, 2000, chipname, camera=camera,
-                                   obs_metadata=obs_md)
+    ra, dec = chip_center(chip_name, obs_par_file, camera, ymid=ymid, xmid=xmid)
     sky_cone_select(obs_par_file, object_file, ra, dec, radius, outfile)
