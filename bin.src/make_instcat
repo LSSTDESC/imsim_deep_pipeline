@@ -158,6 +158,8 @@ def apply_dithering(obs_md):
     # dither rotTelPos and rotSkyPos
     from lsst.sims.utils import _getRotSkyPos
     phosim_header_map = copy.deepcopy(DefaultPhoSimHeaderMap)
+    phosim_header_map['seeing'] = ('FWHMgeom', None)
+
     try:
         dithered_rot_tel = obs_md.OpsimMetaData[dithered_rot_tel_pos_name]
         dithered_rot_sky = _getRotSkyPos(obs_md._pointingRA,
