@@ -160,6 +160,7 @@ def apply_dithering(obs_md):
     phosim_header_map = copy.deepcopy(DefaultPhoSimHeaderMap)
     phosim_header_map['rawSeeing'] = ('rawSeeing', None)
     phosim_header_map['FWHMgeom'] = ('FWHMgeom', None)
+    phosim_header_map['FHWMeff'] = ('FWHMeff', None)
 
     try:
         dithered_rot_tel = obs_md.OpsimMetaData[dithered_rot_tel_pos_name]
