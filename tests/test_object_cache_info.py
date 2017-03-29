@@ -45,7 +45,8 @@ class ObjectCacheInfoTest(unittest.TestCase):
         """
         self.object_info_cache.add_obj_file(self.offset_file, 0.2)
 
-        candidate_file = 'object_catalog_test.txt'
+        candidate_file = os.path.join(os.environ['IMSIM_DEEP_PIPELINE_DIR'],
+                                      'tests', 'object_catalog_test.txt')
 
         object_file \
             = self.object_info_cache.get_nearest_object_file(candidate_file,
