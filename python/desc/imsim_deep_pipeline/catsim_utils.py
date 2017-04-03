@@ -21,7 +21,7 @@ with warnings.catch_warnings():
 __all__ = ['PhoSimPointICRS', 'PhoSimSersic2dICRS', 'make_obs_par_file',
            'make_instance_catalog', 'apply_dithering']
 
-logging.basicConfig(format="make_instcat: %(message)s", level=logging.INFO,
+logging.basicConfig(format="%(message)s", level=logging.INFO,
                     stream=sys.stdout)
 logger = logging.getLogger()
 
@@ -79,7 +79,7 @@ def make_obs_par_file(obs_md, db_config, phosim_header_map, outfile):
         phosim_object.write_header(output)
 
 def make_instance_catalog(obs_md, db_config, phosim_header_map, outfile,
-                          stars_only=False):
+                          stars_only=False, logger=logger):
     """
     Create an instance catalog for stars and galaxies.
 
@@ -113,7 +113,7 @@ def make_instance_catalog(obs_md, db_config, phosim_header_map, outfile,
             phosim_object.write_catalog(outfile, write_mode='a',
                                         write_header=False, chunk_size=20000)
 
-    if stars_only:
+    if not stars_only:
         for objid in gal_objs:
             logger.info("processing %s", objid)
             db_obj = CatalogDBObject.from_objid(objid, **db_config)
@@ -160,7 +160,7 @@ def apply_dithering(obs_md):
     phosim_header_map = copy.deepcopy(DefaultPhoSimHeaderMap)
     phosim_header_map['rawSeeing'] = ('rawSeeing', None)
     phosim_header_map['FWHMgeom'] = ('FWHMgeom', None)
-    phosim_header_map['FHWMeff'] = ('FWHMeff', None)
+    phosim_header_map['FWHMeff'] = ('FWHMeff', None)
 
     try:
         dithered_rot_tel = obs_md.OpsimMetaData[dithered_rot_tel_pos_name]

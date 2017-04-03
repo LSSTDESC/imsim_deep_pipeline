@@ -43,8 +43,7 @@ output_dir = os.path.join(os.environ['OUTPUT_DATA_DIR'],
 if not os.path.isdir(output_dir):
     os.makedirs(output_dir)
 
-cache_file \
-    = os.path.join(os.environ['OUTPUT_DATA_DIR'], 'object_cache_info.pkl')
+cache_file = os.environ['OBJECT_CACHE_FILE']
 cache_info = desc.imsim_deep_pipeline.ObjectCacheInfo.load(cache_file)
 
 instcat_file = os.path.join(output_dir, 'instcat_' + sensor_id_slug + '.txt')
@@ -56,8 +55,9 @@ logger.info("object_file: %s", object_file)
 desc.imsim_deep_pipeline.trim_instcat(sensor_id, obs_par_file, object_file,
                                       instcat_file)
 
-command = ('imsim.py %s --outdir %s --sensor "%s" --log_level DEBUG'
-           % (instcat_file, output_dir, sensor_id))
+psf = os.environ.get('IMSIM_PSF', 'Kolmogorov')
+command = ('imsim.py %s --outdir %s --sensor "%s" --psf %s --log_level DEBUG'
+           % (instcat_file, output_dir, sensor_id, psf))
 logger.info("running %s", command)
 subprocess.check_call(command, shell=True)
 

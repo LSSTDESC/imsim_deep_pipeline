@@ -5,7 +5,15 @@ cached object data, when available.
 """
 from __future__ import absolute_import, print_function
 import os
-import desc.imsim_deep_pipeline
+import sys
+import logging
+import subprocess
+import warnings
+with warnings.catch_warnings():
+    warnings.filterwarnings('ignore', 'Duplicate object type id', UserWarning)
+    warnings.filterwarnings('ignore', 'duplicate object identifie', UserWarning)
+    from lsst.sims.catUtils.utils import ObservationMetaDataGenerator
+import desc.imsim_deep_pipeline as idp
 
 logging.basicConfig(format="make_instcat: %(message)s", level=logging.INFO,
                     stream=sys.stdout)
@@ -19,18 +27,18 @@ db_config = dict(database='LSSTCATSIM',
 opsim_db_file = os.environ['OPSIM_DB_FILE']
 gen = ObservationMetaDataGenerator(database=opsim_db_file, driver='sqlite')
 
-visit_info = desc.imsim_deep_pipeline.get_visit_info()
+visit_info = idp.get_visit_info()
 obs_md = gen.getObservationMetaData(obsHistID=visit_info.obsHistId,
                                     boundLength=visit_info.instcat_radius)[0]
 
-obs_md, phosim_header_map = apply_dithering(obs_md)
+obs_md, phosim_header_map = idp.apply_dithering(obs_md)
 
 # If the instcat file does not already exist, write an observing
 # parameter-only file both for checking the object cache and to be
 # used by downstream processes with the cached object files.
 if not os.path.isfile(visit_info.instcat_file):
-    make_obs_par_file(obs_md, db_config, phosim_header_map,
-                      visit_info.instcat_file)
+    idp.make_obs_par_file(obs_md, db_config, phosim_header_map,
+                          visit_info.instcat_file)
 
 #    # Check the cache to see if it is covered.
 #    cache_file = os.path.join(os.environ['OUTPUT_DATA_DIR'],
@@ -57,7 +65,7 @@ if not os.path.isfile(visit_info.instcat_file):
 # if the dither info file is available.
 dither_info_file = os.environ['DITHER_INFO_FILE']
 if os.path.isfile(dither_info_file):
-    sensors = desc.imsim_deep_pipeline.SensorLists(dither_info_file=dither_info_file)
+    sensors = idp.SensorLists(dither_info_file=dither_info_file)
     obsHistID = int(os.environ['OBSHISTID'])
     command = "pipelineSet NUM_SENSOR_VISITS %i" % len(sensors(obsHistID))
     subprocess.check_call(command, shell=True)

@@ -1,0 +1,67 @@
+#!/usr/bin/env python
+"""
+Create instance catalogs via CatSim for the four nominal undithered
+fields to serve as the on-disk cache objects that individual sensor
+visits will use to extract per run object catalogs.
+"""
+from __future__ import absolute_import, print_function
+import os
+import sys
+import logging
+import warnings
+import sqlite3
+with warnings.catch_warnings():
+    warnings.filterwarnings('ignore', 'Duplicate object type id', UserWarning)
+    warnings.filterwarnings('ignore', 'duplicate object identifie', UserWarning)
+    from lsst.sims.catUtils.utils import ObservationMetaDataGenerator
+import desc.imsim_deep_pipeline as idp
+
+logging.basicConfig(format="make_catalog_cache: %(message)s",
+                    level=logging.INFO,
+                    stream=sys.stdout)
+logger = logging.getLogger()
+
+db_config = dict(database='LSSTCATSIM',
+                 port=1433,
+                 host='fatboy.phys.washington.edu',
+                 driver='mssql+pymssql')
+
+opsim_db_file = os.environ['OPSIM_DB_FILE']
+field_id_file = os.environ['FIELD_ID_FILE']
+lsst_band = os.environ['LSST_BAND']
+instcat_radius = float(os.environ['INSTCAT_RADIUS'])
+stars_only = False
+try:
+    if os.environ['STARS_ONLY'] == 'true':
+        stars_only = True
+except KeyError:
+    pass
+
+conn = sqlite3.connect(opsim_db_file)
+logger.info("Reading %s", opsim_db_file)
+
+gen = ObservationMetaDataGenerator(database=opsim_db_file, driver='sqlite')
+
+cache_info = idp.ObjectCacheInfo()
+with open(field_id_file) as input_:
+    for line in input_:
+        if line.startswith('#'):
+            continue
+        fieldID = line.strip()
+        query = ("select distinct obsHistID from Summary where "
+                 + "fieldID=%s and filter='%s' " % (fieldID, lsst_band)
+                 + "order by obsHistID asc limit 1")
+        logger.debug("executing query: %s", query)
+        obsHistID = [row[0] for row in conn.execute(query)][0]
+        logger.info("%s  %i", fieldID, obsHistID)
+
+        obs_md = gen.getObservationMetaData(obsHistID=obsHistID,
+                                            boundLength=instcat_radius)[0]
+        obs_md, phosim_header_map = idp.apply_dithering(obs_md)
+        instcat_file = ('instcat_%i_%s_%.1f.txt'
+                        % (obsHistID, lsst_band, instcat_radius))
+        idp.make_instance_catalog(obs_md, db_config, phosim_header_map,
+                                  instcat_file, stars_only=True, logger=logger)
+        cache_info.add_obj_file(os.path.abspath(os.path.join('.', instcat_file)),
+                                instcat_radius)
+cache_info.save('object_cache_info.pkl')
