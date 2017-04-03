@@ -7,6 +7,7 @@ echo 'added /nfs/farm/g/lsst/u1/software/redhat6-x86_64-64bit-gcc44/anaconda/py-
 
 setup lsst_sims
 setup -r /gpfs/slac/kipac/fs1/g/desc/imsim_deep/sims_psf_fixes/sims_GalSimInterface -j
+#setup -r /gpfs/slac/kipac/fs1/g/desc/imsim_deep/sims_psf_fixes/sims_catUtils -j
 setup -r /gpfs/slac/kipac/fs1/g/desc/imsim_deep/imSim -j
 setup -r /gpfs/slac/kipac/fs1/g/desc/imsim_deep/imsim_deep_pipeline -j
 
