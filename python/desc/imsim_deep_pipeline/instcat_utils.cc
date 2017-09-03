@@ -9,8 +9,6 @@ namespace desc {
       PYBIND11_PLUGIN(instcat_utils) {
          py::module mod("instcat_utils");
 
-	 //         mod.doc() = "instance catalog filtering tools";
-
          mod.def("ang_sep", &ang_sep,
                  "Angular separation between two sky coordinates in degrees.");
 
