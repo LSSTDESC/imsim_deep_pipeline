@@ -1,5 +1,5 @@
-#ifndef desc_imsim_deep_pipeline_instcat_utils_h
-#define desc_imsim_deep_pipeline_instcat_utils_h
+#ifndef desc_imsim_deep_pipeline_InstcatUtils_h
+#define desc_imsim_deep_pipeline_InstcatUtils_h
 
 #include <string>
 
@@ -15,4 +15,4 @@ namespace desc {
    } // namespace imsim_deep_pipeline
 } // namespace desc
 
-#endif // desc_imsim_deep_pipeline_instcat_utils_h
+#endif // desc_imsim_deep_pipeline_InstcatUtils_h

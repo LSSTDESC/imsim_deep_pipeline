@@ -3,7 +3,7 @@
 
 #include "lsst/afw/coord/Coord.h"
 #include "lsst/afw/geom/Point.h"
-#include "desc/imsim_deep_pipeline/instcat_utils.h"
+#include "desc/imsim_deep_pipeline/InstcatUtils.h"
 
 namespace desc {
 namespace imsim_deep_pipeline {
