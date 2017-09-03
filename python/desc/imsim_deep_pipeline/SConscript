@@ -1,3 +1,4 @@
 # -*- python -*-
 from lsst.sconsUtils import scripts
-scripts.BasicSConscript.python(['instcat_utils'])
+scripts.BasicSConscript.pybind11(['instcat_utils'],
+                                 addUnderscore=False)
