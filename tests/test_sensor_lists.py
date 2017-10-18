@@ -23,9 +23,10 @@ class SensorListsTestCase(unittest.TestCase):
             self.assertEqual(len(sensors(obsHistID)), 189)
 
         # Pass a truncated list of invalid FITS files.
-        infile = os.path.join(os.environ['IMSIM_DEEP_PIPELINE_DIR'], 'tests',
-                              'invalid_file_list_example.txt')
-        sensors = desc.imsim_deep_pipeline.SensorLists(infile)
+        infile = os.path.join(os.environ['IMSIM_DEEP_PIPELINE_DIR'],
+                              'tests', 'invalid_file_list_example.txt')
+        sensors =\
+            desc.imsim_deep_pipeline.SensorLists(missing_fits_files=infile)
         self.assertEqual(set(sensors(193223)),
                          set(('R:0,2 S:2,1', 'R:4,1 S:2,0')))
         self.assertEqual(len(sensors(195755)), 2)

@@ -4,6 +4,7 @@ Module to cache instance catalog object files.
 from __future__ import absolute_import, print_function
 import pickle
 from collections import namedtuple
+import lsst.obs.lsstSim
 import desc.imsim_deep_pipeline
 
 __all__ = ['ObjectCacheInfo', 'ObjectCacheInfoException']
@@ -45,8 +46,42 @@ class ObjectCacheInfo(object):
             raise RuntimeError("RA or Dec not found in %s" % object_file)
         return ra, dec
 
+    def get_nearest_object_file(self, candidate_file, chip_name,
+                                camera=None):
+        """
+        Find the nearest object file to the specified chip and object
+        catalog file.
+
+        Parameters
+        ----------
+        candidate_file : str
+            Filename of observing parameters-only instance catalog that
+            needs to be covered by the cached catalogs.
+        chip_name : str
+            The name of the chip to consider, e.g., "R:2,2 S:1,1"
+        camera : lsst.afw.cameraGeom.camera.Camera object, optional
+            If None (default), then use lsst.obs.lsstSim.LsstSimMapper().camera.
+        Returns
+        -------
+        str :
+            Full path of the nearest object catalog in the cache.
+        """
+        if camera is None:
+            camera = lsst.obs.lsstSim.LsstSimMapper().camera
+        ra, dec = desc.imsim_deep_pipeline.chip_center(chip_name,
+                                                       candidate_file, camera)
+        min_sep = None
+        for catalog in self.catalogs:
+            sep = desc.imsim_deep_pipeline.ang_sep(ra, dec, catalog.ra,
+                                                   catalog.dec)
+            if min_sep is None or sep < min_sep:
+                min_sep = sep
+                selected_catalog = catalog
+        return selected_catalog.filename
+
     def get_object_files(self, candidate_file, radius):
-        """Find the instance catalog object files that cover the candidate
+        """
+        Find the instance catalog object files that cover the candidate
         file.
 
         Parameters
