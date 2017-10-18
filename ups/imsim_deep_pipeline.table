@@ -1,4 +1,5 @@
 setupRequired(imsim)
+setupRequired(pybind11)
 
 envPrepend(PATH, ${PRODUCT_DIR}/bin)
 

@@ -17,3 +17,6 @@ seed 161899
 seeing 0.7613760
 sunalt -59.1098785
 vistime 33.0000000
+rawSeeing 0.5462840
+FWHMeff 0.7980840
+FWHMgeom 0.7080250
